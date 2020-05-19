@@ -72,12 +72,12 @@ func NewRTPTransport(conn net.Conn) *RTPTransport {
 	var err error
 	t.rtpSession, err = muxrtp.NewSessionRTP(t.rtpEndpoint)
 	if err != nil {
-		log.Errorf(err.Error())
+		log.Errorf("muxrtp.NewSessionRTP => %s", err.Error())
 		return nil
 	}
 	t.rtcpSession, err = muxrtp.NewSessionRTCP(t.rtcpEndpoint)
 	if err != nil {
-		log.Errorf(err.Error())
+		log.Errorf("muxrtp.NewSessionRTCP => %s", err.Error())
 		return nil
 	}
 	t.receiveRTP()
@@ -98,7 +98,7 @@ func NewOutRTPTransport(id, addr string) *RTPTransport {
 	dstAddr := &net.UDPAddr{IP: net.ParseIP(ip), Port: port}
 	conn, err := net.DialUDP("udp", srcAddr, dstAddr)
 	if err != nil {
-		log.Errorf(err.Error())
+		log.Errorf("net.DialUDP => %s", err.Error())
 		return nil
 	}
 	r := NewRTPTransport(conn)
@@ -278,6 +278,7 @@ func (r *RTPTransport) WriteRTP(rtp *rtp.Packet) error {
 	log.Debugf("RTPTransport.WriteRTP rtp=%v", rtp)
 	writeStream, err := r.rtpSession.OpenWriteStream()
 	if err != nil {
+		log.Errorf("write error %+v", err)
 		r.writeErrCnt++
 		return err
 	}
@@ -296,7 +297,7 @@ func (r *RTPTransport) WriteRTP(rtp *rtp.Packet) error {
 		r.extSent--
 	}
 	if err != nil {
-		log.Errorf(err.Error())
+		log.Errorf("writeStream.WriteRTP => %s", err.Error())
 		r.writeErrCnt++
 	}
 	return err
