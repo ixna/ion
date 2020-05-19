@@ -25,5 +25,4 @@ type Transport interface {
 	WriteErrTotal() int
 	WriteErrReset()
 	GetBandwidth() int
-	GetPayloadMap() map[uint32]uint8
 }
